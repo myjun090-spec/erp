@@ -146,6 +146,32 @@
 | 협업 | `/workspace` | 공지, 자료실, 승인함, 승인 이력을 다룹니다. |
 | 인증 | `/login` | Google OAuth 기반 로그인과 개발용 preview login 진입점입니다. |
 
+### 스크린샷
+
+#### 대시보드
+
+전체 프로젝트 기준 운영 KPI, 승인 대기, 자료실, 프로젝트 현황을 한 화면에서 확인할 수 있습니다.
+
+![Dashboard](./public/assets/dashboard.png)
+
+#### 프로젝트
+
+프로젝트 목록과 프로젝트 구조 관리의 진입 화면입니다. 현장, 유닛, 시스템, WBS, 실행예산 관리로 이어집니다.
+
+![Projects](./public/assets/project.png)
+
+#### 공급망
+
+발주 목록과 승인, 부분입고, 완료 상태를 추적하는 화면입니다. 자재, 재고, 입고 흐름과 연결됩니다.
+
+![Supply Chain](./public/assets/supply-chain.png)
+
+#### 재무
+
+분개전표 목록과 상태 흐름을 확인하는 화면입니다. AP, AR, 계정과목, 회계단위, 자산 모듈과 함께 사용합니다.
+
+![Finance](./public/assets/finance.png)
+
 ## 기술 스택
 
 | 구분 | 사용 기술 |
