@@ -500,11 +500,16 @@ web/
 | `GOOGLE_PLATFORM_ADMIN_EMAILS` | env 고정 플랫폼 관리자 이메일 목록 |
 | `GOOGLE_DOMAIN_LEAD_EMAILS` | env 고정 업무담당자 이메일 목록 |
 | `GOOGLE_EXECUTIVE_EMAILS` | env 고정 경영진 이메일 목록 |
+| `ERP_ENABLE_UNPROVISIONED_GOOGLE_LOGIN` | `users`에 등록되지 않은 Google 사용자에게 임시 로그인 허용 여부 |
+| `ERP_UNPROVISIONED_GOOGLE_ROLE` | 미등록 Google 사용자에게 부여할 앱 역할. 현재는 `executive`를 권장 |
 | `ERP_ENABLE_PREVIEW_LOGIN` | 개발용 preview login 활성화 여부 |
 | `MONGODB_URI` | MongoDB 연결 문자열 |
 | `MONGODB_DB_NAME` | 사용할 DB 이름 |
 
 예시는 [.env.example](./.env.example)를 참고하면 됩니다.
+
+`ERP_ENABLE_UNPROVISIONED_GOOGLE_LOGIN=true` 로 설정하면 `users` 컬렉션에 등록되지 않은 Google 사용자도 로그인할 수 있습니다.
+이 경우 권한은 `ERP_UNPROVISIONED_GOOGLE_ROLE` 값으로 부여되며, `executive`를 사용하면 수정 권한 없이 읽기 중심으로 접근합니다.
 
 ## 시작하기
 

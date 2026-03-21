@@ -75,6 +75,8 @@ type GoogleConfig = {
   redirectUri: string;
   hostedDomain: string | null;
   defaultRole: AppRole;
+  enableUnprovisionedLogin: boolean;
+  unprovisionedRole: AppRole;
   platformAdminEmails: Set<string>;
   domainLeadEmails: Set<string>;
   executiveEmails: Set<string>;
@@ -101,6 +103,11 @@ function parseCsvEnv(value: string | undefined) {
       .map((entry) => entry.trim().toLowerCase())
       .filter(Boolean),
   );
+}
+
+function parseBooleanEnv(value: string | undefined) {
+  const normalized = (value ?? "").trim().toLowerCase();
+  return normalized === "true" || normalized === "1" || normalized === "yes" || normalized === "on";
 }
 
 function parseTokenPart<T>(value: string) {
@@ -200,12 +207,18 @@ export function getGoogleAuthConfig(origin?: string): GoogleConfig | null {
 
   const defaultRole = process.env.GOOGLE_DEFAULT_ROLE?.trim();
 
+  const unprovisionedRole = process.env.ERP_UNPROVISIONED_GOOGLE_ROLE?.trim();
+
   return {
     clientId,
     clientSecret,
     redirectUri,
     hostedDomain: process.env.GOOGLE_HOSTED_DOMAIN?.trim().toLowerCase() ?? null,
     defaultRole: isAppRole(defaultRole) ? defaultRole : "executive",
+    enableUnprovisionedLogin: parseBooleanEnv(
+      process.env.ERP_ENABLE_UNPROVISIONED_GOOGLE_LOGIN,
+    ),
+    unprovisionedRole: isAppRole(unprovisionedRole) ? unprovisionedRole : "executive",
     platformAdminEmails: parseCsvEnv(process.env.GOOGLE_PLATFORM_ADMIN_EMAILS),
     domainLeadEmails: parseCsvEnv(process.env.GOOGLE_DOMAIN_LEAD_EMAILS),
     executiveEmails: parseCsvEnv(process.env.GOOGLE_EXECUTIVE_EMAILS),
@@ -482,6 +495,10 @@ export async function resolveGoogleUserContext(input: {
       matchedRoleCode: matchedRole?.code ?? null,
       matchedRolePermissions: matchedRole?.permissions ?? null,
     });
+  }
+
+  if (!role && !matchedUser && config.enableUnprovisionedLogin) {
+    role = config.unprovisionedRole;
   }
 
   if (!role) {
