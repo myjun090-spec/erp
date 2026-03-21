@@ -1,5 +1,7 @@
 # ERP
 
+![Dashboard](./public/assets/dashboard.png)
+
 프로젝트형 제조, 공급망, 품질, 재무, 시운전 운영을 한 화면에서 처리하기 위한 ERP 웹 애플리케이션입니다.
 
 이 저장소는 단순한 CRUD 샘플이 아니라, 아래 흐름을 하나의 서비스로 연결하는 내부 업무 시스템에 가깝습니다.
@@ -147,12 +149,6 @@
 | 인증 | `/login` | Google OAuth 기반 로그인과 개발용 preview login 진입점입니다. |
 
 ### 스크린샷
-
-#### 대시보드
-
-전체 프로젝트 기준 운영 KPI, 승인 대기, 자료실, 프로젝트 현황을 한 화면에서 확인할 수 있습니다.
-
-![Dashboard](./public/assets/dashboard.png)
 
 #### 프로젝트
 
