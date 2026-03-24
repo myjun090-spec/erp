@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PermissionLink } from "@/components/auth/permission-link";
 import { useViewerPermissions } from "@/components/auth/viewer-permissions-context";
-import { useProjectSelection } from "@/components/layout/project-selection-context";
+import { useFacilitySelection } from "@/components/layout/facility-selection-context";
 import { PageHeader } from "@/components/layout/page-header";
 import { BulkActionTable } from "@/components/ui/bulk-action-table";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -11,7 +11,7 @@ import { useToast } from "@/components/ui/toast-provider";
 import { canApproveAp, canCancelApApproval, canPayAp } from "@/lib/ap-status";
 import { canAccessAction } from "@/lib/navigation";
 import { formatIntegerDisplay } from "@/lib/number-input";
-import { appendProjectIdToPath } from "@/lib/project-scope";
+import { appendFacilityIdToPath } from "@/lib/facility-scope";
 
 type ApItem = {
   _id: string;
@@ -41,12 +41,12 @@ export default function ApInvoicesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { pushToast } = useToast();
-  const { currentProjectId } = useProjectSelection();
+  const { currentFacilityId } = useFacilitySelection();
   const viewerPermissions = useViewerPermissions();
   const fetchData = useCallback(async () => {
     setLoading(true); setError(null);
-    try { const res = await fetch(appendProjectIdToPath("/api/finance", currentProjectId)); const json = await res.json(); if (json.ok) setItems(json.data.apInvoices); else setError(json.message); } catch { setError("네트워크 오류"); } finally { setLoading(false); }
-  }, [currentProjectId]);
+    try { const res = await fetch(appendFacilityIdToPath("/api/finance", currentFacilityId)); const json = await res.json(); if (json.ok) setItems(json.data.apInvoices); else setError(json.message); } catch { setError("네트워크 오류"); } finally { setLoading(false); }
+  }, [currentFacilityId]);
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const runBulk = async (action: string, targetIds: string[], label: string) => {

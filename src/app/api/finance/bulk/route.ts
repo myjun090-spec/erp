@@ -77,7 +77,7 @@ async function approveApInvoicesWithPurchaseOrderBillingGuard(
               invoiceDate: 1,
               totalAmount: 1,
               budgetSnapshot: 1,
-              projectSnapshot: 1,
+              facilitySnapshot: 1,
               wbsSnapshot: 1,
               vendorSnapshot: 1,
               sourceSnapshot: 1,
@@ -186,9 +186,9 @@ async function approveApInvoicesWithPurchaseOrderBillingGuard(
                 sourceId: apId,
                 refNo: String(doc.invoiceNo || "-"),
               },
-              projectSnapshot:
-                doc.projectSnapshot && typeof doc.projectSnapshot === "object"
-                  ? doc.projectSnapshot
+              facilitySnapshot:
+                doc.facilitySnapshot && typeof doc.facilitySnapshot === "object"
+                  ? doc.facilitySnapshot
                   : null,
               wbsSnapshot:
                 doc.wbsSnapshot && typeof doc.wbsSnapshot === "object"
@@ -516,7 +516,7 @@ async function issueArInvoices(
               totalAmount: 1,
               contractSnapshot: 1,
               customerSnapshot: 1,
-              projectSnapshot: 1,
+              facilitySnapshot: 1,
               changeHistory: 1,
               issueJournalEntrySnapshot: 1,
             })
@@ -816,7 +816,7 @@ async function collectArInvoices(
               totalAmount: 1,
               invoiceDate: 1,
               customerSnapshot: 1,
-              projectSnapshot: 1,
+              facilitySnapshot: 1,
               contractSnapshot: 1,
               collectionHistory: 1,
               collectionSummary: 1,

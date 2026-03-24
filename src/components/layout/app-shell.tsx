@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ViewerPermissionsProvider } from "@/components/auth/viewer-permissions-context";
-import { ProjectSelectionProvider } from "@/components/layout/project-selection-context";
+import { FacilitySelectionProvider } from "@/components/layout/facility-selection-context";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { ToastProvider } from "@/components/ui/toast-provider";
@@ -63,7 +63,7 @@ export function AppShell({ children, viewer }: AppShellProps) {
       <ViewerPermissionsProvider permissions={viewer.permissions}>
         <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--text)]">
           <div className="flex min-h-screen">
-            <ProjectSelectionProvider>
+            <FacilitySelectionProvider>
               <Sidebar
                 groups={viewer.navigationGroups}
                 favorites={viewer.favoriteItems}
@@ -81,7 +81,7 @@ export function AppShell({ children, viewer }: AppShellProps) {
                   </div>
                 </main>
               </div>
-            </ProjectSelectionProvider>
+            </FacilitySelectionProvider>
           </div>
         </div>
       </ViewerPermissionsProvider>

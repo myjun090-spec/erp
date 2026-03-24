@@ -7,7 +7,7 @@ type StatePanelVariant = "empty" | "loading" | "error";
 type StatePanelProps = {
   variant: StatePanelVariant;
   title: string;
-  description: string;
+  description?: string;
   action?: React.ReactNode;
   tone?: StatePanelTone;
   compact?: boolean;
@@ -81,9 +81,11 @@ export function StatePanel({
             <h3 className="text-base font-semibold text-[color:var(--text)]">
               {title}
             </h3>
-            <p className="mt-2 text-sm leading-7 text-[color:var(--text-muted)]">
-              {description}
-            </p>
+            {description ? (
+              <p className="mt-2 text-sm leading-7 text-[color:var(--text-muted)]">
+                {description}
+              </p>
+            ) : null}
           </div>
         </div>
         {action ? <div className="flex flex-wrap gap-2">{action}</div> : null}

@@ -1,18 +1,9 @@
-import { toTrimmedString } from "@/lib/domain-write";
+/* stub – 제조 ERP 재무 스냅샷 빌더 제거됨. 재무 API 컴파일용 */
 
-export function buildAccountingUnitSnapshot(unit: Record<string, unknown>) {
-  return {
-    accountingUnitId: String(unit._id),
-    code: toTrimmedString(unit.code),
-    name: toTrimmedString(unit.name),
-    currency: toTrimmedString(unit.currency),
-  };
+export function buildAccountSnapshot(account: Record<string, unknown>): Record<string, unknown> {
+  return { accountId: String(account._id ?? ""), code: String(account.code ?? ""), name: String(account.name ?? "") };
 }
 
-export function buildAccountSnapshot(account: Record<string, unknown>) {
-  return {
-    accountCode: toTrimmedString(account.accountCode),
-    accountName: toTrimmedString(account.accountName),
-    accountType: toTrimmedString(account.accountType),
-  };
+export function buildAccountingUnitSnapshot(unit: Record<string, unknown>): Record<string, unknown> {
+  return { unitId: String(unit._id ?? ""), code: String(unit.code ?? ""), name: String(unit.name ?? "") };
 }

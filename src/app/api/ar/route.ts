@@ -8,8 +8,8 @@ import { buildArCollectionSummary } from "@/lib/ar-collections";
 import { generateArInvoiceNo } from "@/lib/document-numbers";
 import { getMongoDb } from "@/lib/mongodb";
 import { buildPartySnapshot } from "@/lib/party-snapshot";
-import { getProjectAccessScope } from "@/lib/project-access";
-import { buildProjectSnapshot } from "@/lib/project-sites";
+import { getFacilityAccessScope } from "@/lib/facility-access";
+// buildProjectSnapshot removed - using facilitySnapshot
 export async function POST(request: Request) {
   const auth = await requireApiActionPermission("ar.create");
   if ("error" in auth) return auth.error;
@@ -29,25 +29,25 @@ export async function POST(request: Request) {
     if (!customer) {
       return NextResponse.json({ ok: false, message: "선택한 고객을 찾을 수 없습니다." }, { status: 400 });
     }
-    const projectId = typeof body.projectId === "string" ? body.projectId.trim() : "";
-    if (!projectId) {
+    const facilityId = typeof body.facilityId === "string" ? body.facilityId.trim() : "";
+    if (!facilityId) {
       return NextResponse.json({ ok: false, message: "프로젝트를 선택해 주세요." }, { status: 400 });
     }
-    if (!ObjectId.isValid(projectId)) {
+    if (!ObjectId.isValid(facilityId)) {
       return NextResponse.json({ ok: false, message: "프로젝트 식별자가 올바르지 않습니다." }, { status: 400 });
     }
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
     if (
-      projectAccessScope.allowedProjectIds &&
-      !projectAccessScope.allowedProjectIds.includes(projectId)
+      facilityAccessScope.allowedFacilityIds &&
+      !facilityAccessScope.allowedFacilityIds.includes(facilityId)
     ) {
       return NextResponse.json({ ok: false, message: "선택한 프로젝트에 접근할 수 없습니다." }, { status: 403 });
     }
     const project = await db.collection("projects").findOne({
-      _id: new ObjectId(projectId),
+      _id: new ObjectId(facilityId),
       status: { $ne: "archived" },
     });
     if (!project) {
@@ -81,14 +81,14 @@ export async function POST(request: Request) {
       );
     }
     const contractProjectId =
-      contract.projectSnapshot && typeof contract.projectSnapshot === "object"
-        ? String((contract.projectSnapshot as Record<string, unknown>).projectId ?? "")
+      contract.facilitySnapshot && typeof contract.facilitySnapshot === "object"
+        ? String((contract.facilitySnapshot as Record<string, unknown>).facilityId ?? "")
         : "";
     const contractCustomerPartyId =
       contract.customerSnapshot && typeof contract.customerSnapshot === "object"
         ? String((contract.customerSnapshot as Record<string, unknown>).partyId ?? "")
         : "";
-    if (contractProjectId && contractProjectId !== projectId) {
+    if (contractProjectId && contractProjectId !== facilityId) {
       return NextResponse.json(
         { ok: false, message: "선택한 계약이 프로젝트와 일치하지 않습니다." },
         { status: 400 },
@@ -128,7 +128,7 @@ export async function POST(request: Request) {
       invoiceNo: generateArInvoiceNo(),
       totalAmount,
       customerSnapshot: buildPartySnapshot(customer),
-      projectSnapshot: buildProjectSnapshot(project),
+      facilitySnapshot: body.facilitySnapshot ?? null,
       contractSnapshot: buildContractSnapshot(contract),
       status: resolveStatus(body.status, "draft"),
       collectionHistory: [],

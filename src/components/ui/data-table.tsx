@@ -14,7 +14,7 @@ type Row = Record<string, React.ReactNode>;
 
 type DataTableProps = {
   title: string;
-  description: string;
+  description?: string;
   columns: Column[];
   rows: Row[];
   actions?: React.ReactNode;

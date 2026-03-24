@@ -18,13 +18,13 @@ import { generateApInvoiceNo } from "@/lib/document-numbers";
 import { getMongoDb } from "@/lib/mongodb";
 import { buildPartySnapshot } from "@/lib/party-snapshot";
 import { buildPurchaseOrderBillingSummary } from "@/lib/purchase-order-billing";
-import { getProjectAccessScope } from "@/lib/project-access";
+import { getFacilityAccessScope } from "@/lib/facility-access";
 
 export async function POST(request: Request) {
   const auth = await requireApiActionPermission("ap.create");
   if ("error" in auth) return auth.error;
   try { const db = await getMongoDb(); const body = stripProtectedCreateFields(await request.json()); const now = new Date().toISOString();
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
@@ -42,11 +42,11 @@ export async function POST(request: Request) {
       if (!purchaseOrder) {
         return NextResponse.json({ ok: false, message: "참조 발주를 찾을 수 없습니다." }, { status: 404 });
       }
-      const projectId =
-        purchaseOrder.projectSnapshot && typeof purchaseOrder.projectSnapshot === "object"
-          ? String((purchaseOrder.projectSnapshot as Record<string, unknown>).projectId ?? "")
+      const facilityId =
+        purchaseOrder.facilitySnapshot && typeof purchaseOrder.facilitySnapshot === "object"
+          ? String((purchaseOrder.facilitySnapshot as Record<string, unknown>).facilityId ?? "")
           : "";
-      if (projectAccessScope.allowedProjectIds && !projectAccessScope.allowedProjectIds.includes(projectId)) {
+      if (facilityAccessScope.allowedFacilityIds && !facilityAccessScope.allowedFacilityIds.includes(facilityId)) {
         return NextResponse.json({ ok: false, message: "참조 발주에 접근할 수 없습니다." }, { status: 403 });
       }
       const purchaseOrderStatus = toTrimmedString(purchaseOrder.status);
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
         );
       }
 
-      const linkedProject = await db.collection("projects").findOne({ _id: new ObjectId(projectId) });
+      const linkedProject = await db.collection("projects").findOne({ _id: new ObjectId(facilityId) });
       const wbsId =
         purchaseOrder.wbsSnapshot && typeof purchaseOrder.wbsSnapshot === "object"
           ? String((purchaseOrder.wbsSnapshot as Record<string, unknown>).wbsId ?? "")
@@ -105,7 +105,7 @@ export async function POST(request: Request) {
       const resolvedBudgetLink = await resolveBudgetLinkDocuments(
         db,
         budgetLinkInput,
-        projectAccessScope.allowedProjectIds,
+        facilityAccessScope.allowedFacilityIds,
       );
       if ("error" in resolvedBudgetLink) {
         return NextResponse.json({ ok: false, message: resolvedBudgetLink.error }, { status: 400 });

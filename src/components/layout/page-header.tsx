@@ -1,7 +1,7 @@
 type PageHeaderProps = {
   eyebrow: string;
   title: string;
-  description: string;
+  description?: string;
   meta?: Array<{ label: string; tone?: "default" | "info" | "success" | "warning" | "danger" }>;
   actions?: React.ReactNode;
 };
@@ -22,9 +22,11 @@ export function PageHeader({
           <h1 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[color:var(--text)] sm:text-3xl">
             {title}
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[color:var(--text-muted)]">
-            {description}
-          </p>
+          {description ? (
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[color:var(--text-muted)]">
+              {description}
+            </p>
+          ) : null}
         </div>
         {actions ? (
           <div

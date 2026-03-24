@@ -5,8 +5,8 @@ import {
   supportsAutomaticDepreciationSchedule,
 } from "@/lib/fixed-assets";
 import { getMongoDb } from "@/lib/mongodb";
-import { getProjectAccessScope } from "@/lib/project-access";
-import { buildProjectFilter, getProjectIdFromRequest } from "@/lib/project-scope";
+import { getFacilityAccessScope } from "@/lib/facility-access";
+import { buildFacilityFilter, getFacilityIdFromRequest } from "@/lib/facility-scope";
 
 export async function POST(request: Request) {
   const auth = await requireApiActionPermission("asset.depreciation-run");
@@ -14,8 +14,8 @@ export async function POST(request: Request) {
 
   try {
     const db = await getMongoDb();
-    const projectId = getProjectIdFromRequest(request);
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityId = getFacilityIdFromRequest(request);
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
@@ -23,10 +23,10 @@ export async function POST(request: Request) {
     const docs = await db
       .collection("fixed_assets")
       .find(
-        buildProjectFilter(
-          projectId,
+        buildFacilityFilter(
+          facilityId,
           { status: { $ne: "archived" } },
-          projectAccessScope.allowedProjectIds,
+          facilityAccessScope.allowedFacilityIds,
         ),
       )
       .project({

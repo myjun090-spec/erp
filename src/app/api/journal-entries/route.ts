@@ -10,7 +10,7 @@ import { generateJournalEntryNo } from "@/lib/document-numbers";
 import { buildCreateMetadata, resolveStatus, stripProtectedCreateFields } from "@/lib/domain-write";
 import { normalizeJournalEntryOriginType } from "@/lib/journal-entry-origin";
 import { getMongoDb } from "@/lib/mongodb";
-import { getProjectAccessScope } from "@/lib/project-access";
+import { getFacilityAccessScope } from "@/lib/facility-access";
 
 async function resolvePostingAccount(
   db: Awaited<ReturnType<typeof getMongoDb>>,
@@ -98,14 +98,14 @@ export async function POST(request: Request) {
     if (validationError) {
       return NextResponse.json({ ok: false, message: validationError }, { status: 400 });
     }
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
     const resolvedBudgetLink = await resolveBudgetLinkDocuments(
       db,
       budgetLinkInput,
-      projectAccessScope.allowedProjectIds,
+      facilityAccessScope.allowedFacilityIds,
     );
     if ("error" in resolvedBudgetLink) {
       return NextResponse.json({ ok: false, message: resolvedBudgetLink.error }, { status: 400 });

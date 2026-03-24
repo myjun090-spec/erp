@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PermissionLink } from "@/components/auth/permission-link";
 import { useViewerPermissions } from "@/components/auth/viewer-permissions-context";
-import { useProjectSelection } from "@/components/layout/project-selection-context";
+import { useFacilitySelection } from "@/components/layout/facility-selection-context";
 import { PageHeader } from "@/components/layout/page-header";
 import { BulkActionTable } from "@/components/ui/bulk-action-table";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -17,7 +17,7 @@ import {
 } from "@/lib/journal-entry-status";
 import { canAccessAction } from "@/lib/navigation";
 import { formatIntegerDisplay } from "@/lib/number-input";
-import { appendProjectIdToPath } from "@/lib/project-scope";
+import { appendFacilityIdToPath } from "@/lib/facility-scope";
 
 type JEItem = { _id: string; voucherNo: string; journalType: string; journalDate: string; projectSnapshot: { name: string } | null; totalDebit: number; totalCredit: number; status: string };
 const columns = [
@@ -31,12 +31,12 @@ export default function JournalEntriesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { pushToast } = useToast();
-  const { currentProjectId } = useProjectSelection();
+  const { currentFacilityId } = useFacilitySelection();
   const viewerPermissions = useViewerPermissions();
   const fetchData = useCallback(async () => {
     setLoading(true); setError(null);
-    try { const res = await fetch(appendProjectIdToPath("/api/finance", currentProjectId)); const json = await res.json(); if (json.ok) setItems(json.data.journalEntries); else setError(json.message); } catch { setError("네트워크 오류"); } finally { setLoading(false); }
-  }, [currentProjectId]);
+    try { const res = await fetch(appendFacilityIdToPath("/api/finance", currentFacilityId)); const json = await res.json(); if (json.ok) setItems(json.data.journalEntries); else setError(json.message); } catch { setError("네트워크 오류"); } finally { setLoading(false); }
+  }, [currentFacilityId]);
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const runBulk = async (action: string, targetIds: string[], label: string) => {

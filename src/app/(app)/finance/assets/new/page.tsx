@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useProjectSelection } from "@/components/layout/project-selection-context";
+import { useFacilitySelection } from "@/components/layout/facility-selection-context";
 import { PageHeader } from "@/components/layout/page-header";
 import { Panel } from "@/components/ui/panel";
 import { FormField } from "@/components/ui/form-field";
@@ -14,7 +14,7 @@ import {
   depreciationMethodOptions,
 } from "@/lib/fixed-assets";
 import { formatIntegerInput, parseFormattedInteger } from "@/lib/number-input";
-import { pickDefaultProjectId } from "@/lib/project-scope";
+import { pickDefaultProjectId } from "@/lib/facility-scope";
 
 type ProjectOption = {
   _id: string;
@@ -30,7 +30,7 @@ function getToday() {
 export default function AssetNewPage() {
   const router = useRouter();
   const { pushToast } = useToast();
-  const { currentProjectId } = useProjectSelection();
+  const { currentFacilityId } = useFacilitySelection();
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -59,7 +59,7 @@ export default function AssetNewPage() {
             projectId:
               prev.projectId ||
               pickDefaultProjectId(
-                currentProjectId,
+                currentFacilityId,
                 json.meta?.defaultProjectId ?? null,
                 nextProjects,
               ) ||
@@ -81,7 +81,7 @@ export default function AssetNewPage() {
     return () => {
       cancelled = true;
     };
-  }, [currentProjectId, pushToast]);
+  }, [currentFacilityId, pushToast]);
 
   const update =
     (key: keyof typeof form) =>

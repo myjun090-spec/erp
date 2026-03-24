@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { PermissionButton } from "@/components/auth/permission-button";
 import { PermissionLink } from "@/components/auth/permission-link";
 import { useRouter } from "next/navigation";
-import { useProjectSelection } from "@/components/layout/project-selection-context";
+import { useFacilitySelection } from "@/components/layout/facility-selection-context";
 import { PageHeader } from "@/components/layout/page-header";
 import { DataTable } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useToast } from "@/components/ui/toast-provider";
 import { getAssetClassLabel, getDepreciationMethodLabel } from "@/lib/fixed-assets";
-import { appendProjectIdToPath } from "@/lib/project-scope";
+import { appendFacilityIdToPath } from "@/lib/facility-scope";
 
 type AssetItem = {
   _id: string;
@@ -39,14 +39,14 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [runningBatch, setRunningBatch] = useState(false);
-  const { currentProjectId } = useProjectSelection();
+  const { currentFacilityId } = useFacilitySelection();
   const { pushToast } = useToast();
 
   async function load() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(appendProjectIdToPath("/api/assets", currentProjectId));
+        const res = await fetch(appendFacilityIdToPath("/api/assets", currentFacilityId));
         const json = await res.json();
         if (!json.ok) {
           setError(json.message || "자산 목록을 불러오지 못했습니다.");
@@ -62,13 +62,13 @@ export default function AssetsPage() {
 
   useEffect(() => {
     void load();
-  }, [currentProjectId]);
+  }, [currentFacilityId]);
 
   const runDepreciationBatch = async () => {
     setRunningBatch(true);
     try {
       const response = await fetch(
-        appendProjectIdToPath("/api/assets/depreciation", currentProjectId),
+        appendFacilityIdToPath("/api/assets/depreciation", currentFacilityId),
         { method: "POST" },
       );
       const json = await response.json();

@@ -11,7 +11,7 @@ import { Panel } from "@/components/ui/panel";
 import { useToast } from "@/components/ui/toast-provider";
 import { generateJournalEntryNo } from "@/lib/document-numbers";
 import { formatIntegerInput, parseFormattedInteger } from "@/lib/number-input";
-import { appendProjectIdToPath } from "@/lib/project-scope";
+import { appendFacilityIdToPath } from "@/lib/facility-scope";
 
 type ApDuplicateGuardItem = {
   _id: string;
@@ -129,7 +129,7 @@ export default function Page() {
 
     async function loadApLinkedInvoices() {
       try {
-        const response = await fetch(appendProjectIdToPath("/api/finance", projectId), {
+        const response = await fetch(appendFacilityIdToPath("/api/finance", projectId), {
           signal: controller.signal,
         });
         const json = await response.json();

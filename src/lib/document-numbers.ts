@@ -1,115 +1,59 @@
-function pad(value: number, size = 2) {
-  return String(value).padStart(size, "0");
-}
-
 function buildTimestamp(date: Date) {
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
-  const milliseconds = pad(date.getMilliseconds(), 3);
-
-  return `${year}${month}${day}-${hours}${minutes}${seconds}${milliseconds}`;
+  const y = date.getFullYear();
+  const mo = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  const h = String(date.getHours()).padStart(2, "0");
+  const mi = String(date.getMinutes()).padStart(2, "0");
+  const s = String(date.getSeconds()).padStart(2, "0");
+  const ms = String(date.getMilliseconds()).padStart(3, "0");
+  return `${y}${mo}${d}-${h}${mi}${s}${ms}`;
 }
 
-export function generateContractNo(date = new Date()) {
-  return `CT-${buildTimestamp(date)}`;
-}
+// ── 이용자/사례 ──
+export function generateFacilityCode(d = new Date()) { return `FAC-${buildTimestamp(d)}`; }
+export function generateClientNo(d = new Date()) { return `CLT-${buildTimestamp(d)}`; }
+export function generateAssessmentNo(d = new Date()) { return `NA-${buildTimestamp(d)}`; }
+export function generateCasePlanNo(d = new Date()) { return `CP-${buildTimestamp(d)}`; }
+export function generateServiceLinkageNo(d = new Date()) { return `SL-${buildTimestamp(d)}`; }
+export function generateCounselingNo(d = new Date()) { return `CR-${buildTimestamp(d)}`; }
+export function generateCaseClosureNo(d = new Date()) { return `CC-${buildTimestamp(d)}`; }
 
-export function generateOrgUnitCode(date = new Date()) {
-  return `ORG-${buildTimestamp(date)}`;
-}
+// ── 프로그램 ──
+export function generateProgramNo(d = new Date()) { return `PGM-${buildTimestamp(d)}`; }
+export function generateSessionNo(d = new Date()) { return `PSN-${buildTimestamp(d)}`; }
+export function generateSurveyNo(d = new Date()) { return `SVY-${buildTimestamp(d)}`; }
+export function generatePerformanceEvalNo(d = new Date()) { return `PEV-${buildTimestamp(d)}`; }
 
-export function generateProjectCode(date = new Date()) {
-  return `PRJ-${buildTimestamp(date)}`;
-}
+// ── 후원/봉사 ──
+export function generateDonorNo(d = new Date()) { return `DNR-${buildTimestamp(d)}`; }
+export function generateDonationNo(d = new Date()) { return `DON-${buildTimestamp(d)}`; }
+export function generateInKindDonationNo(d = new Date()) { return `IKD-${buildTimestamp(d)}`; }
+export function generateVolunteerNo(d = new Date()) { return `VOL-${buildTimestamp(d)}`; }
+export function generateVolunteerActivityNo(d = new Date()) { return `VA-${buildTimestamp(d)}`; }
+export function generateVolunteerHoursNo(d = new Date()) { return `VH-${buildTimestamp(d)}`; }
 
-export function generateSiteCode(date = new Date()) {
-  return `SITE-${buildTimestamp(date)}`;
-}
+// ── 시설/인사 ──
+export function generateStaffNo(d = new Date()) { return `STF-${buildTimestamp(d)}`; }
+export function generateAttendanceNo(d = new Date()) { return `ATT-${buildTimestamp(d)}`; }
+export function generateRoomNo(d = new Date()) { return `RM-${buildTimestamp(d)}`; }
+export function generateSupplyNo(d = new Date()) { return `SUP-${buildTimestamp(d)}`; }
+export function generateVehicleNo(d = new Date()) { return `VEH-${buildTimestamp(d)}`; }
+export function generateVehicleScheduleNo(d = new Date()) { return `VS-${buildTimestamp(d)}`; }
 
-export function generateUnitNo(date = new Date()) {
-  return `UNIT-${buildTimestamp(date)}`;
-}
+// ── 보조금 ──
+export function generateSubsidyNo(d = new Date()) { return `GRT-${buildTimestamp(d)}`; }
 
-export function generateSystemCode(date = new Date()) {
-  return `SYS-${buildTimestamp(date)}`;
-}
+// ── 업무지원 ──
+export function generateApprovalDocNo(d = new Date()) { return `APD-${buildTimestamp(d)}`; }
+export function generateCirculationNo(d = new Date()) { return `CRC-${buildTimestamp(d)}`; }
+export function generateDocumentIssueNo(d = new Date()) { return `DOC-${buildTimestamp(d)}`; }
+export function generateScheduleNo(d = new Date()) { return `SCH-${buildTimestamp(d)}`; }
+export function generateWorkLogNo(d = new Date()) { return `WL-${buildTimestamp(d)}`; }
 
-export function generateExecutionBudgetCode(date = new Date()) {
-  return `EB-${buildTimestamp(date)}`;
-}
+// ── 재무 ──
+export function generateApInvoiceNo(d = new Date()) { return `AP-${buildTimestamp(d)}`; }
+export function generateArInvoiceNo(d = new Date()) { return `AR-${buildTimestamp(d)}`; }
+export function generateJournalEntryNo(d = new Date()) { return `JE-${buildTimestamp(d)}`; }
 
-export function generateVendorCode(date = new Date()) {
-  return `VND-${buildTimestamp(date)}`;
-}
-
-export function generatePartyCode(date = new Date()) {
-  return `PTY-${buildTimestamp(date)}`;
-}
-
-export function generateMaterialCode(date = new Date()) {
-  return `MAT-${buildTimestamp(date)}`;
-}
-
-export function generatePurchaseOrderNo(date = new Date()) {
-  return `PO-${buildTimestamp(date)}`;
-}
-
-export function generateApInvoiceNo(date = new Date()) {
-  return `AP-${buildTimestamp(date)}`;
-}
-
-export function generateArInvoiceNo(date = new Date()) {
-  return `AR-${buildTimestamp(date)}`;
-}
-
-export function generateJournalEntryNo(date = new Date()) {
-  return `JE-${buildTimestamp(date)}`;
-}
-
-export function generateModuleNo(date = new Date()) {
-  return `MOD-${buildTimestamp(date)}`;
-}
-
-export function generateManufacturingOrderNo(date = new Date()) {
-  return `MO-${buildTimestamp(date)}`;
-}
-
-export function generateShipmentNo(date = new Date()) {
-  return `SHP-${buildTimestamp(date)}`;
-}
-
-export function generatePackageNo(date = new Date()) {
-  return `PKG-${buildTimestamp(date)}`;
-}
-
-export function generateRegulatoryActionNo(date = new Date()) {
-  return `REG-${buildTimestamp(date)}`;
-}
-
-export function generateInventoryTransferNo(date = new Date()) {
-  return `TRF-${buildTimestamp(date)}`;
-}
-
-export function generateInventoryReceiptNo(date = new Date()) {
-  return `RCV-${buildTimestamp(date)}`;
-}
-
-export function generateIncidentNo(date = new Date()) {
-  return `HSE-${buildTimestamp(date)}`;
-}
-
-export function generateItpCode(date = new Date()) {
-  return `ITP-${buildTimestamp(date)}`;
-}
-
-export function generateInspectionNo(date = new Date()) {
-  return `INSP-${buildTimestamp(date)}`;
-}
-
-export function generateNcrNo(date = new Date()) {
-  return `NCR-${buildTimestamp(date)}`;
-}
+// 관리자 모듈
+export function generateOrgUnitCode(d = new Date()) { return `OU-${buildTimestamp(d)}`; }

@@ -9,8 +9,8 @@ import {
   serializeApInvoice,
 } from "@/lib/ap-payments";
 import { getMongoDb } from "@/lib/mongodb";
-import { getProjectAccessScope } from "@/lib/project-access";
-import { hasProjectAccess } from "@/lib/project-scope";
+import { getFacilityAccessScope } from "@/lib/facility-access";
+import { hasProjectAccess } from "@/lib/facility-scope";
 import { toNumberValue, toTrimmedString, buildActorSnapshot } from "@/lib/domain-write";
 
 export async function POST(
@@ -41,7 +41,7 @@ export async function POST(
       );
     }
 
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
@@ -51,13 +51,13 @@ export async function POST(
       return NextResponse.json({ ok: false, message: "AP를 찾을 수 없습니다." }, { status: 404 });
     }
 
-    const projectId =
-      doc.projectSnapshot && typeof doc.projectSnapshot === "object"
-        ? String((doc.projectSnapshot as Record<string, unknown>).projectId ?? "")
+    const facilityId =
+      doc.facilitySnapshot && typeof doc.facilitySnapshot === "object"
+        ? String((doc.facilitySnapshot as Record<string, unknown>).facilityId ?? "")
         : "";
     if (
-      projectAccessScope.allowedProjectIds &&
-      !hasProjectAccess(projectId, projectAccessScope.allowedProjectIds)
+      facilityAccessScope.allowedFacilityIds &&
+      !hasProjectAccess(facilityId, facilityAccessScope.allowedFacilityIds)
     ) {
       return NextResponse.json({ ok: false, message: "AP에 접근할 수 없습니다." }, { status: 403 });
     }

@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import { requireApiActionPermission, requireApiPermission } from "@/lib/api-access";
 import { buildAccountSnapshot, buildAccountingUnitSnapshot } from "@/lib/finance-snapshots";
 import { getMongoDb } from "@/lib/mongodb";
-import { getProjectAccessScope } from "@/lib/project-access";
+import { getFacilityAccessScope } from "@/lib/facility-access";
 import { buildActorSnapshot, toTrimmedString } from "@/lib/domain-write";
 
 async function validatePostingAccount(
@@ -50,17 +50,17 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const doc = await db.collection("journal_entries").findOne({ _id: new ObjectId(id) });
     if (!doc) return NextResponse.json({ ok: false, message: "전표를 찾을 수 없습니다." }, { status: 404 });
 
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
-    const projectId =
-      doc.projectSnapshot && typeof doc.projectSnapshot === "object"
-        ? String((doc.projectSnapshot as Record<string, unknown>).projectId ?? "")
+    const facilityId =
+      doc.facilitySnapshot && typeof doc.facilitySnapshot === "object"
+        ? String((doc.facilitySnapshot as Record<string, unknown>).facilityId ?? "")
         : "";
     if (
-      projectAccessScope.allowedProjectIds &&
-      !projectAccessScope.allowedProjectIds.includes(projectId)
+      facilityAccessScope.allowedFacilityIds &&
+      !facilityAccessScope.allowedFacilityIds.includes(facilityId)
     ) {
       return NextResponse.json({ ok: false, message: "전표를 찾을 수 없습니다." }, { status: 404 });
     }
@@ -85,17 +85,17 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ ok: false, message: "전표를 찾을 수 없습니다." }, { status: 404 });
     }
 
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
-    const projectId =
-      doc.projectSnapshot && typeof doc.projectSnapshot === "object"
-        ? String((doc.projectSnapshot as Record<string, unknown>).projectId ?? "")
+    const facilityId =
+      doc.facilitySnapshot && typeof doc.facilitySnapshot === "object"
+        ? String((doc.facilitySnapshot as Record<string, unknown>).facilityId ?? "")
         : "";
     if (
-      projectAccessScope.allowedProjectIds &&
-      !projectAccessScope.allowedProjectIds.includes(projectId)
+      facilityAccessScope.allowedFacilityIds &&
+      !facilityAccessScope.allowedFacilityIds.includes(facilityId)
     ) {
       return NextResponse.json({ ok: false, message: "전표를 찾을 수 없습니다." }, { status: 404 });
     }

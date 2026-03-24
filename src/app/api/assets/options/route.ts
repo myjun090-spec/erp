@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
 import { requireApiPermission } from "@/lib/api-access";
 import { getMongoDb } from "@/lib/mongodb";
-import { getProjectAccessScope } from "@/lib/project-access";
+import { getFacilityAccessScope } from "@/lib/facility-access";
+import { buildFacilityFilter } from "@/lib/facility-scope";
 
 export async function GET() {
   const auth = await requireApiPermission("finance.read");
@@ -10,26 +10,15 @@ export async function GET() {
 
   try {
     const db = await getMongoDb();
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
-    const filter =
-      projectAccessScope.allowedProjectIds === null
-        ? { status: { $ne: "archived" } }
-        : {
-            status: { $ne: "archived" },
-            _id: {
-              $in: projectAccessScope.allowedProjectIds
-                .filter((projectId) => ObjectId.isValid(projectId))
-                .map((projectId) => new ObjectId(projectId)),
-            },
-          };
 
-    const projects = await db
-      .collection("projects")
-      .find(filter)
-      .sort({ code: 1, name: 1 })
+    const facilities = await db
+      .collection("facilities")
+      .find(buildFacilityFilter(null, { status: "active" }, facilityAccessScope.allowedFacilityIds))
+      .sort({ name: 1 })
       .project({ _id: 1, code: 1, name: 1, status: 1 })
       .toArray();
 
@@ -37,14 +26,14 @@ export async function GET() {
       ok: true,
       source: "database",
       data: {
-        projects: projects.map((project) => ({
-          _id: project._id.toString(),
-          code: String(project.code || ""),
-          name: String(project.name || ""),
-          status: String(project.status || ""),
+        facilities: facilities.map((f) => ({
+          _id: f._id.toString(),
+          code: String(f.code || ""),
+          name: String(f.name || ""),
+          status: String(f.status || ""),
         })),
       },
-      meta: { total: projects.length, defaultProjectId: projectAccessScope.defaultProjectId },
+      meta: { total: facilities.length },
     });
   } catch (e) {
     return NextResponse.json(

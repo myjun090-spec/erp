@@ -1,5 +1,5 @@
 // 도메인별 상태 전이 규칙과 badge 매핑
-// workflow.md 기준 공통 상태값 정의
+// 사회복지관 ERP 상태값 정의
 
 export type StatusTone = "default" | "info" | "success" | "warning" | "danger";
 
@@ -9,109 +9,196 @@ export type StatusDef = {
   next?: string[];
 };
 
-// ── 공급망/조달 ──
+// ── 이용자/사례 ──
 
-export const vendorQualificationStatus: Record<string, StatusDef> = {
-  pending:    { label: "심사대기", tone: "default", next: ["reviewing"] },
-  reviewing:  { label: "심사중", tone: "warning", next: ["qualified", "rejected"] },
-  qualified:  { label: "적격", tone: "success", next: ["suspended"] },
-  rejected:   { label: "부적격", tone: "danger" },
-  suspended:  { label: "정지", tone: "danger", next: ["reviewing"] },
+export const clientStatus: Record<string, StatusDef> = {
+  active: { label: "이용중", tone: "success", next: ["inactive", "transferred"] },
+  inactive: { label: "이용중단", tone: "warning", next: ["active"] },
+  transferred: { label: "전출", tone: "default", next: [] as string[] },
+  deceased: { label: "사망", tone: "danger", next: [] as string[] },
 };
 
-export const purchaseOrderStatus: Record<string, StatusDef> = {
-  draft:              { label: "초안", tone: "default", next: ["submitted"] },
-  submitted:          { label: "제출", tone: "info", next: ["approved", "rejected"] },
-  approved:           { label: "승인", tone: "success", next: ["partial-received", "completed"] },
-  rejected:           { label: "반려", tone: "danger", next: ["draft"] },
-  "partial-received": { label: "부분입고", tone: "warning", next: ["completed"] },
-  completed:          { label: "완료", tone: "success" },
+export const needsAssessmentStatus: Record<string, StatusDef> = {
+  draft: { label: "작성중", tone: "default", next: ["completed"] },
+  completed: { label: "완료", tone: "success", next: ["archived"] },
+  archived: { label: "보관", tone: "default", next: [] as string[] },
 };
 
-export const inventoryTransactionType: Record<string, StatusDef> = {
-  receipt:    { label: "입고", tone: "success" },
-  issue:      { label: "출고", tone: "info" },
-  transfer:   { label: "이동", tone: "info" },
-  return:     { label: "반품", tone: "warning" },
-  adjustment: { label: "조정", tone: "default" },
+export const casePlanStatus: Record<string, StatusDef> = {
+  draft: { label: "초안", tone: "default", next: ["submitted"] },
+  submitted: { label: "제출", tone: "info", next: ["approved", "rejected"] },
+  approved: { label: "승인", tone: "success", next: ["in-progress"] },
+  rejected: { label: "반려", tone: "danger", next: ["draft"] },
+  "in-progress": { label: "진행중", tone: "info", next: ["completed", "terminated"] },
+  completed: { label: "완료", tone: "success", next: [] as string[] },
+  terminated: { label: "중단", tone: "danger", next: [] as string[] },
 };
 
-export const inventoryTransactionStatus: Record<string, StatusDef> = {
-  completed:        { label: "완료", tone: "success" },
-  "pending-approval": { label: "승인대기", tone: "warning", next: ["completed", "rejected"] },
-  rejected:         { label: "반려", tone: "danger" },
+export const serviceLinkageStatus: Record<string, StatusDef> = {
+  requested: { label: "의뢰", tone: "info", next: ["connected", "failed"] },
+  connected: { label: "연계중", tone: "warning", next: ["completed", "failed"] },
+  completed: { label: "완료", tone: "success", next: [] as string[] },
+  failed: { label: "실패", tone: "danger", next: ["requested"] },
 };
 
-// ── 제작/모듈 ──
-
-export const manufacturingOrderStatus: Record<string, StatusDef> = {
-  planned:      { label: "계획", tone: "default", next: ["in-progress"] },
-  "in-progress": { label: "제작중", tone: "info", next: ["completed", "on-hold"] },
-  "on-hold":    { label: "보류", tone: "warning", next: ["in-progress"] },
-  completed:    { label: "완료", tone: "success" },
+export const counselingStatus: Record<string, StatusDef> = {
+  draft: { label: "작성중", tone: "default", next: ["completed"] },
+  completed: { label: "완료", tone: "success", next: [] as string[] },
 };
 
-export const logisticsStatus: Record<string, StatusDef> = {
-  preparing:   { label: "준비중", tone: "default", next: ["in-transit"] },
-  "in-transit": { label: "운송중", tone: "info", next: ["arrived"] },
-  arrived:     { label: "도착", tone: "success" },
+export const caseClosureStatus: Record<string, StatusDef> = {
+  draft: { label: "초안", tone: "default", next: ["submitted"] },
+  submitted: { label: "제출", tone: "info", next: ["approved", "rejected"] },
+  approved: { label: "승인", tone: "success", next: [] as string[] },
+  rejected: { label: "반려", tone: "danger", next: ["draft"] },
 };
 
-export const customsStatus: Record<string, StatusDef> = {
-  "n/a":       { label: "N/A", tone: "default" },
-  pending:     { label: "통관대기", tone: "warning", next: ["cleared"] },
-  cleared:     { label: "통관완료", tone: "success" },
+// ── 프로그램 ──
+
+export const programStatus: Record<string, StatusDef> = {
+  planning: { label: "기획", tone: "default", next: ["recruiting"] },
+  recruiting: { label: "모집중", tone: "info", next: ["in-progress", "cancelled"] },
+  "in-progress": { label: "운영중", tone: "success", next: ["completed", "cancelled"] },
+  completed: { label: "완료", tone: "success", next: [] as string[] },
+  cancelled: { label: "취소", tone: "danger", next: [] as string[] },
 };
 
-export const moduleStatus: Record<string, StatusDef> = {
-  planned:      { label: "계획", tone: "default", next: ["fabricating"] },
-  fabricating:  { label: "제작중", tone: "info", next: ["testing"] },
-  testing:      { label: "검사중", tone: "warning", next: ["shipped", "rework"] },
-  rework:       { label: "재작업", tone: "danger", next: ["testing"] },
-  shipped:      { label: "출하", tone: "info", next: ["installed"] },
-  installed:    { label: "설치완료", tone: "success" },
+export const programSessionStatus: Record<string, StatusDef> = {
+  scheduled: { label: "예정", tone: "default", next: ["completed", "cancelled"] },
+  completed: { label: "완료", tone: "success", next: [] as string[] },
+  cancelled: { label: "취소", tone: "danger", next: [] as string[] },
 };
 
-// ── 품질/안전 ──
-
-export const itpApprovalStatus: Record<string, StatusDef> = {
-  draft:     { label: "초안", tone: "default", next: ["review"] },
-  review:    { label: "검토중", tone: "warning", next: ["approved", "rejected"] },
-  approved:  { label: "승인", tone: "success" },
-  rejected:  { label: "반려", tone: "danger", next: ["draft"] },
+export const participantStatus: Record<string, StatusDef> = {
+  enrolled: { label: "등록", tone: "success", next: ["withdrawn", "completed"] },
+  withdrawn: { label: "중도포기", tone: "warning", next: [] as string[] },
+  completed: { label: "수료", tone: "success", next: [] as string[] },
 };
 
-export const inspectionResult: Record<string, StatusDef> = {
-  pass:        { label: "합격", tone: "success" },
-  fail:        { label: "불합격", tone: "danger" },
-  conditional: { label: "조건부", tone: "warning" },
+// ── 후원/봉사 ──
+
+export const donorStatus: Record<string, StatusDef> = {
+  active: { label: "활동", tone: "success", next: ["inactive", "archived"] },
+  inactive: { label: "중단", tone: "warning", next: ["active"] },
+  archived: { label: "보관", tone: "default", next: [] as string[] },
 };
 
-export const ncrStatus: Record<string, StatusDef> = {
-  open:           { label: "Open", tone: "info", next: ["investigating"] },
-  investigating:  { label: "조사중", tone: "warning", next: ["disposition"] },
-  disposition:    { label: "처분결정", tone: "warning", next: ["closed"] },
-  closed:         { label: "Closed", tone: "success" },
+export const donationStatus: Record<string, StatusDef> = {
+  received: { label: "입금", tone: "success", next: ["receipted", "refunded"] },
+  receipted: { label: "영수증발급", tone: "info", next: [] as string[] },
+  refunded: { label: "환불", tone: "danger", next: [] as string[] },
 };
 
-export const ncrSeverity: Record<string, StatusDef> = {
-  critical: { label: "Critical", tone: "danger" },
-  major:    { label: "Major", tone: "danger" },
-  minor:    { label: "Minor", tone: "info" },
+export const inKindDonationStatus: Record<string, StatusDef> = {
+  received: { label: "접수", tone: "info", next: ["stored", "distributed"] },
+  stored: { label: "보관중", tone: "warning", next: ["distributed", "disposed"] },
+  distributed: { label: "배분완료", tone: "success", next: [] as string[] },
+  disposed: { label: "폐기", tone: "danger", next: [] as string[] },
 };
 
-export const ncrDisposition: Record<string, StatusDef> = {
-  rework:        { label: "재작업", tone: "warning" },
-  scrap:         { label: "폐기", tone: "danger" },
-  "accept-as-is": { label: "현상수용", tone: "info" },
-  return:        { label: "반품", tone: "warning" },
+export const volunteerStatus: Record<string, StatusDef> = {
+  active: { label: "활동", tone: "success", next: ["inactive", "archived"] },
+  inactive: { label: "중단", tone: "warning", next: ["active"] },
+  archived: { label: "보관", tone: "default", next: [] as string[] },
 };
 
-export const hseIncidentType: Record<string, StatusDef> = {
-  "near-miss":  { label: "아차사고", tone: "warning" },
-  minor:        { label: "경상", tone: "info" },
-  major:        { label: "중상", tone: "danger" },
-  fatality:     { label: "사망", tone: "danger" },
+export const volunteerActivityStatus: Record<string, StatusDef> = {
+  scheduled: { label: "예정", tone: "default", next: ["in-progress", "cancelled"] },
+  "in-progress": { label: "진행중", tone: "info", next: ["completed"] },
+  completed: { label: "완료", tone: "success", next: [] as string[] },
+  cancelled: { label: "취소", tone: "danger", next: [] as string[] },
+};
+
+export const volunteerHoursStatus: Record<string, StatusDef> = {
+  pending: { label: "대기", tone: "warning", next: ["approved", "rejected"] },
+  approved: { label: "승인", tone: "success", next: [] as string[] },
+  rejected: { label: "반려", tone: "danger", next: ["pending"] },
+};
+
+// ── 시설/인사 ──
+
+export const staffStatus: Record<string, StatusDef> = {
+  active: { label: "재직", tone: "success", next: ["on-leave", "resigned"] },
+  "on-leave": { label: "휴직", tone: "warning", next: ["active", "resigned"] },
+  resigned: { label: "퇴직", tone: "default", next: [] as string[] },
+};
+
+export const hrAttendanceStatus: Record<string, StatusDef> = {
+  recorded: { label: "기록", tone: "default", next: ["approved", "rejected"] },
+  approved: { label: "승인", tone: "success", next: [] as string[] },
+  rejected: { label: "반려", tone: "danger", next: ["recorded"] },
+};
+
+export const facilityRoomStatus: Record<string, StatusDef> = {
+  available: { label: "사용가능", tone: "success", next: ["occupied", "maintenance", "closed"] },
+  occupied: { label: "사용중", tone: "info", next: ["available"] },
+  maintenance: { label: "정비중", tone: "warning", next: ["available"] },
+  closed: { label: "폐쇄", tone: "danger", next: [] as string[] },
+};
+
+export const supplyStatus: Record<string, StatusDef> = {
+  "in-stock": { label: "재고있음", tone: "success", next: ["low-stock", "out-of-stock"] },
+  "low-stock": { label: "재고부족", tone: "warning", next: ["in-stock", "out-of-stock"] },
+  "out-of-stock": { label: "재고없음", tone: "danger", next: ["in-stock"] },
+};
+
+export const vehicleStatus: Record<string, StatusDef> = {
+  available: { label: "대기", tone: "success", next: ["in-use", "maintenance", "disposed"] },
+  "in-use": { label: "운행중", tone: "info", next: ["available"] },
+  maintenance: { label: "정비중", tone: "warning", next: ["available"] },
+  disposed: { label: "폐차", tone: "danger", next: [] as string[] },
+};
+
+export const vehicleScheduleStatus: Record<string, StatusDef> = {
+  scheduled: { label: "예정", tone: "default", next: ["in-progress", "cancelled"] },
+  "in-progress": { label: "운행중", tone: "info", next: ["completed"] },
+  completed: { label: "완료", tone: "success", next: [] as string[] },
+  cancelled: { label: "취소", tone: "danger", next: [] as string[] },
+};
+
+// ── 보조금 ──
+
+export const subsidyStatus: Record<string, StatusDef> = {
+  draft: { label: "초안", tone: "default", next: ["approved"] },
+  approved: { label: "교부결정", tone: "info", next: ["active"] },
+  active: { label: "집행중", tone: "success", next: ["settled"] },
+  settled: { label: "정산완료", tone: "success", next: ["returned"] },
+  returned: { label: "반환", tone: "warning", next: [] as string[] },
+};
+
+// ── 업무지원 ──
+
+export const approvalDocumentStatus: Record<string, StatusDef> = {
+  draft: { label: "초안", tone: "default", next: ["submitted"] },
+  submitted: { label: "상신", tone: "info", next: ["approved", "rejected"] },
+  approved: { label: "승인", tone: "success", next: [] as string[] },
+  rejected: { label: "반려", tone: "danger", next: ["draft"] },
+};
+
+export const circulationStatus: Record<string, StatusDef> = {
+  active: { label: "공람중", tone: "info", next: ["completed", "archived"] },
+  completed: { label: "확인완료", tone: "success", next: ["archived"] },
+  archived: { label: "보관", tone: "default", next: [] as string[] },
+};
+
+export const scheduleStatus: Record<string, StatusDef> = {
+  scheduled: { label: "예정", tone: "default", next: ["completed", "cancelled"] },
+  completed: { label: "완료", tone: "success", next: [] as string[] },
+  cancelled: { label: "취소", tone: "danger", next: [] as string[] },
+};
+
+export const workLogStatus: Record<string, StatusDef> = {
+  draft: { label: "작성중", tone: "default", next: ["submitted"] },
+  submitted: { label: "제출", tone: "info", next: ["approved"] },
+  approved: { label: "승인", tone: "success", next: [] as string[] },
+};
+
+// ── 시설 ──
+
+export const facilityStatus: Record<string, StatusDef> = {
+  active: { label: "운영중", tone: "success", next: ["suspended", "closed"] },
+  suspended: { label: "일시중단", tone: "warning", next: ["active", "closed"] },
+  closed: { label: "폐쇄", tone: "danger", next: [] as string[] },
 };
 
 // ── 재무 ──
@@ -144,35 +231,6 @@ export const assetStatus: Record<string, StatusDef> = {
   active:     { label: "Active", tone: "success", next: ["disposed"] },
   disposed:   { label: "처분", tone: "default" },
   impaired:   { label: "손상", tone: "danger" },
-};
-
-// ── 시운전 ──
-
-export const commPackageStatus: Record<string, StatusDef> = {
-  planned:      { label: "계획", tone: "default", next: ["in-progress"] },
-  "in-progress": { label: "진행중", tone: "info", next: ["mc-complete"] },
-  "mc-complete": { label: "MC 완료", tone: "warning", next: ["comm-complete"] },
-  "comm-complete": { label: "시운전 완료", tone: "success", next: ["handed-over"] },
-  "handed-over": { label: "인계완료", tone: "success" },
-};
-
-export const punchStatus: Record<string, StatusDef> = {
-  open:   { label: "Open", tone: "danger", next: ["in-progress"] },
-  "in-progress": { label: "조치중", tone: "warning", next: ["closed"] },
-  closed: { label: "Closed", tone: "success" },
-};
-
-export const punchCategory: Record<string, StatusDef> = {
-  A: { label: "Cat.A (MC 전)", tone: "danger" },
-  B: { label: "Cat.B (MC 후)", tone: "warning" },
-  C: { label: "Cat.C (인계 후)", tone: "info" },
-};
-
-export const regulatoryStatus: Record<string, StatusDef> = {
-  preparing:  { label: "준비중", tone: "warning", next: ["submitted"] },
-  submitted:  { label: "제출", tone: "info", next: ["approved", "revision-required"] },
-  "revision-required": { label: "보완요청", tone: "danger", next: ["submitted"] },
-  approved:   { label: "승인", tone: "success" },
 };
 
 // ── 유틸리티 ──

@@ -1,4 +1,0 @@
-import { redirect } from "next/navigation";
-export default function SafetyPage() {
-  redirect("/safety/hse");
-}

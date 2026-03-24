@@ -9,8 +9,8 @@ import {
 import { buildArChangeHistoryEntry, readArChangeHistory } from "@/lib/ar-history";
 import { buildActorSnapshot, toTrimmedString } from "@/lib/domain-write";
 import { getMongoClient, getMongoDbName } from "@/lib/mongodb";
-import { getProjectAccessScope } from "@/lib/project-access";
-import { hasProjectAccess } from "@/lib/project-scope";
+import { getFacilityAccessScope } from "@/lib/facility-access";
+import { hasProjectAccess } from "@/lib/facility-scope";
 
 function resolveNextArStatus(input: { receivedAmount: number; remainingAmount: number }) {
   if (input.remainingAmount <= 0) {
@@ -51,7 +51,7 @@ export async function POST(
 
     const client = await getMongoClient();
     const db = client.db(getMongoDbName());
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
@@ -61,13 +61,13 @@ export async function POST(
       return NextResponse.json({ ok: false, message: "AR을 찾을 수 없습니다." }, { status: 404 });
     }
 
-    const projectId =
-      existingDoc.projectSnapshot && typeof existingDoc.projectSnapshot === "object"
-        ? String((existingDoc.projectSnapshot as Record<string, unknown>).projectId ?? "")
+    const facilityId =
+      existingDoc.facilitySnapshot && typeof existingDoc.facilitySnapshot === "object"
+        ? String((existingDoc.facilitySnapshot as Record<string, unknown>).facilityId ?? "")
         : "";
     if (
-      projectAccessScope.allowedProjectIds &&
-      !hasProjectAccess(projectId, projectAccessScope.allowedProjectIds)
+      facilityAccessScope.allowedFacilityIds &&
+      !hasProjectAccess(facilityId, facilityAccessScope.allowedFacilityIds)
     ) {
       return NextResponse.json({ ok: false, message: "AR에 접근할 수 없습니다." }, { status: 403 });
     }

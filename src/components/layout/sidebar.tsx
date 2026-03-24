@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useProjectSelection } from "@/components/layout/project-selection-context";
+import { useFacilitySelection } from "@/components/layout/facility-selection-context";
 import { cn } from "@/lib/cn";
 
 type SidebarProps = {
@@ -35,12 +35,12 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const {
-    currentProject,
-    currentProjectId,
-    projects,
-    projectsLoading,
-    setCurrentProjectId,
-  } = useProjectSelection();
+    currentFacility,
+    currentFacilityId,
+    facilities,
+    facilitiesLoading,
+    setCurrentFacilityId,
+  } = useFacilitySelection();
 
   return (
     <aside
@@ -87,25 +87,25 @@ export function Sidebar({
         >
           {collapsed ? (
             <div
-              title={currentProject ? `${currentProject.name} (${currentProject.code})` : "전체 프로젝트"}
+              title={currentFacility ? `${currentFacility.name} (${currentFacility.code})` : "전체 시설"}
               className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl border bg-white text-[11px] font-semibold tracking-[0.08em] text-[color:var(--primary)]"
               style={{ borderColor: "var(--sidebar-border)" }}
             >
-              {currentProject?.code.slice(0, 2).toUpperCase() ?? "ALL"}
+              {currentFacility?.code.slice(0, 2).toUpperCase() ?? "ALL"}
             </div>
           ) : (
             <div className="rounded-[22px] border bg-white/90 p-3 shadow-[0_10px_24px_rgba(12,102,228,0.08)]" style={{ borderColor: "var(--sidebar-border)" }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="text-[10px] font-semibold tracking-[0.18em] uppercase text-[color:var(--sidebar-muted)]">
-                    Current Project
+                    Current Facility
                   </div>
                   <div className="mt-1 text-sm font-semibold text-[color:var(--sidebar-ink)]">
-                    {currentProject ? currentProject.name : "전체 프로젝트"}
+                    {currentFacility ? currentFacility.name : "전체 시설"}
                   </div>
                 </div>
                 <Link
-                  href="/projects"
+                  href="/facilities"
                   prefetch={false}
                   className="rounded-full border px-2.5 py-1 text-[10px] font-semibold tracking-[0.14em] uppercase text-[color:var(--primary)] transition hover:bg-[rgba(12,102,228,0.06)]"
                   style={{ borderColor: "var(--sidebar-border)" }}
@@ -114,21 +114,21 @@ export function Sidebar({
                 </Link>
               </div>
               <label className="mt-3 block">
-                <span className="sr-only">현재 프로젝트 선택</span>
+                <span className="sr-only">현재 시설 선택</span>
                 <select
-                  value={currentProjectId ?? ""}
-                  onChange={(event) => setCurrentProjectId(event.target.value || null)}
-                  disabled={projectsLoading}
+                  value={currentFacilityId ?? ""}
+                  onChange={(event) => setCurrentFacilityId(event.target.value || null)}
+                  disabled={facilitiesLoading}
                   className="w-full rounded-2xl border bg-[rgba(242,247,255,0.72)] px-3 py-2.5 text-sm font-medium text-[color:var(--sidebar-ink)] outline-none transition focus:border-[color:var(--primary)] disabled:cursor-wait disabled:opacity-70"
                   style={{ borderColor: "var(--sidebar-border)" }}
-                  aria-label="현재 프로젝트 선택"
+                  aria-label="현재 시설 선택"
                 >
                   <option value="">
-                    {projectsLoading ? "프로젝트 불러오는 중..." : "전체 프로젝트"}
+                    {facilitiesLoading ? "시설 불러오는 중..." : "전체 시설"}
                   </option>
-                  {projects.map((project) => (
-                    <option key={project._id} value={project._id}>
-                      {project.name} ({project.code})
+                  {facilities.map((facility) => (
+                    <option key={facility._id} value={facility._id}>
+                      {facility.name} ({facility.code})
                     </option>
                   ))}
                 </select>

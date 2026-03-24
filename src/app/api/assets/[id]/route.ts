@@ -10,9 +10,9 @@ import {
   validateFixedAssetInput,
 } from "@/lib/fixed-assets";
 import { getMongoDb } from "@/lib/mongodb";
-import { getProjectAccessScope } from "@/lib/project-access";
-import { hasProjectAccess } from "@/lib/project-scope";
-import { buildProjectSnapshot } from "@/lib/project-sites";
+import { getFacilityAccessScope } from "@/lib/facility-access";
+import { hasProjectAccess } from "@/lib/facility-scope";
+// buildProjectSnapshot removed - using facilitySnapshot
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireApiPermission("finance.read");
@@ -27,17 +27,17 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     if (!doc) {
       return NextResponse.json({ ok: false, message: "고정자산을 찾을 수 없습니다." }, { status: 404 });
     }
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
-    const projectId =
-      doc.projectSnapshot && typeof doc.projectSnapshot === "object"
-        ? String((doc.projectSnapshot as Record<string, unknown>).projectId ?? "")
+    const facilityId =
+      doc.facilitySnapshot && typeof doc.facilitySnapshot === "object"
+        ? String((doc.facilitySnapshot as Record<string, unknown>).facilityId ?? "")
         : "";
     if (
-      projectAccessScope.allowedProjectIds &&
-      !hasProjectAccess(projectId, projectAccessScope.allowedProjectIds)
+      facilityAccessScope.allowedFacilityIds &&
+      !hasProjectAccess(facilityId, facilityAccessScope.allowedFacilityIds)
     ) {
       return NextResponse.json({ ok: false, message: "고정자산을 찾을 수 없습니다." }, { status: 404 });
     }
@@ -69,39 +69,39 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       );
     }
 
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
-    const currentProjectId =
-      currentDoc.projectSnapshot && typeof currentDoc.projectSnapshot === "object"
-        ? String((currentDoc.projectSnapshot as Record<string, unknown>).projectId ?? "")
+    const currentFacilityId =
+      currentDoc.facilitySnapshot && typeof currentDoc.facilitySnapshot === "object"
+        ? String((currentDoc.facilitySnapshot as Record<string, unknown>).facilityId ?? "")
         : "";
     if (
-      projectAccessScope.allowedProjectIds &&
-      !hasProjectAccess(currentProjectId, projectAccessScope.allowedProjectIds)
+      facilityAccessScope.allowedFacilityIds &&
+      !hasProjectAccess(currentFacilityId, facilityAccessScope.allowedFacilityIds)
     ) {
       return NextResponse.json({ ok: false, message: "고정자산을 찾을 수 없습니다." }, { status: 404 });
     }
 
     const body = (await request.json()) as Record<string, unknown>;
-    const projectId = typeof body.projectId === "string" ? body.projectId.trim() : "";
+    const facilityId = typeof body.facilityId === "string" ? body.facilityId.trim() : "";
     const normalizedInput = normalizeFixedAssetInput(body);
-    const validationError = validateFixedAssetInput(normalizedInput, projectId);
+    const validationError = validateFixedAssetInput(normalizedInput, facilityId);
     if (validationError) {
       return NextResponse.json({ ok: false, message: validationError }, { status: 400 });
     }
-    if (!ObjectId.isValid(projectId)) {
+    if (!ObjectId.isValid(facilityId)) {
       return NextResponse.json({ ok: false, message: "프로젝트 식별자가 올바르지 않습니다." }, { status: 400 });
     }
     if (
-      projectAccessScope.allowedProjectIds &&
-      !projectAccessScope.allowedProjectIds.includes(projectId)
+      facilityAccessScope.allowedFacilityIds &&
+      !facilityAccessScope.allowedFacilityIds.includes(facilityId)
     ) {
       return NextResponse.json({ ok: false, message: "선택한 프로젝트에 접근할 수 없습니다." }, { status: 403 });
     }
     const project = await db.collection("projects").findOne({
-      _id: new ObjectId(projectId),
+      _id: new ObjectId(facilityId),
       status: { $ne: "archived" },
     });
     if (!project) {
@@ -155,7 +155,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       {
         $set: {
           assetClass: normalizedInput.assetClass,
-          projectSnapshot: buildProjectSnapshot(project),
+          facilitySnapshot: body.facilitySnapshot ?? null,
           location: normalizedInput.location,
           acquisitionDate: normalizedInput.acquisitionDate,
           acquisitionCost: normalizedInput.acquisitionCost,
@@ -206,17 +206,17 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     );
     if ("error" in auth) return auth.error;
 
-    const projectAccessScope = await getProjectAccessScope({
+    const facilityAccessScope = await getFacilityAccessScope({
       email: auth.profile.email,
       role: auth.profile.role,
     });
-    const projectId =
-      currentDoc.projectSnapshot && typeof currentDoc.projectSnapshot === "object"
-        ? String((currentDoc.projectSnapshot as Record<string, unknown>).projectId ?? "")
+    const facilityId =
+      currentDoc.facilitySnapshot && typeof currentDoc.facilitySnapshot === "object"
+        ? String((currentDoc.facilitySnapshot as Record<string, unknown>).facilityId ?? "")
         : "";
     if (
-      projectAccessScope.allowedProjectIds &&
-      !hasProjectAccess(projectId, projectAccessScope.allowedProjectIds)
+      facilityAccessScope.allowedFacilityIds &&
+      !hasProjectAccess(facilityId, facilityAccessScope.allowedFacilityIds)
     ) {
       return NextResponse.json({ ok: false, message: "고정자산을 찾을 수 없습니다." }, { status: 404 });
     }
@@ -250,7 +250,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       }
 
       const project = await db.collection("projects").findOne({
-        _id: new ObjectId(projectId),
+        _id: new ObjectId(facilityId),
         status: { $ne: "archived" },
       });
       if (!project) {
