@@ -36,7 +36,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const errorCode = typeof params.error === "string" ? params.error : null;
   const errorMessage = typeof params.message === "string" ? params.message : null;
   const showPreviewAccess =
-    process.env.NODE_ENV !== "production" &&
     process.env.ERP_ENABLE_PREVIEW_LOGIN === "true";
 
   const loginMessages: Record<string, string> = {
