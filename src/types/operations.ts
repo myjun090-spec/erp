@@ -2,7 +2,7 @@
 
 export type IssueCategory = "안전사고" | "시설고장" | "이용자컴플레인" | "직원이슈" | "기타";
 export type IssueUrgency = "긴급" | "보통" | "낮음";
-export type IssueStatus = "접수" | "분석중" | "배정됨" | "처리중" | "완료" | "종결";
+export type IssueStatus = "접수" | "분석중" | "배정됨" | "처리중" | "완료" | "종결" | "보류";
 
 export type IssueAiAnalysis = {
   category: IssueCategory;

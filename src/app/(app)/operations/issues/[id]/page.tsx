@@ -37,6 +37,7 @@ const statusTone: Record<IssueStatus, "default" | "info" | "warning" | "success"
   "처리중": "info",
   "완료": "success",
   "종결": "default",
+  "보류": "warning",
 };
 
 function RiskBar({ level }: { level: number }) {

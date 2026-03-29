@@ -30,6 +30,7 @@ const statusTone: Record<IssueStatus, "default" | "info" | "warning" | "success"
   "처리중": "info",
   "완료": "success",
   "종결": "default",
+  "보류": "warning",
 };
 
 function RiskMeter({ level }: { level: number }) {
@@ -164,6 +165,7 @@ export default function IssuesPage() {
           <option value="처리중">처리중</option>
           <option value="완료">완료</option>
           <option value="종결">종결</option>
+          <option value="보류">보류</option>
         </select>
       </Panel>
 
