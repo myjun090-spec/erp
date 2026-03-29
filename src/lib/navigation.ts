@@ -166,6 +166,18 @@ export const navigationGroups: NavigationGroup[] = [
     ],
   },
   {
+    title: "AI 운영",
+    items: [
+      {
+        title: "운영관리",
+        href: "/operations",
+        caption: "이슈, 배정, 인수인계, 보드, 보고서",
+        phase: "Phase 3",
+        permission: "operations.read",
+      },
+    ],
+  },
+  {
     title: "분석",
     items: [
       {
@@ -240,6 +252,7 @@ export const routePermissions: Array<{
   { prefix: "/facility-hr", permission: "facility-hr.read" },
   { prefix: "/finance", permission: "finance.read" },
   { prefix: "/statistics", permission: "statistics.read" },
+  { prefix: "/operations", permission: "operations.read" },
   { prefix: "/ai-assistant", permission: "dashboard.read" },
   { prefix: "/integration", permission: "admin.read" },
   { prefix: "/google-collab", permission: "workspace.read" },
@@ -470,6 +483,38 @@ const searchableRouteItems: SearchableRouteItem[] = [
     permission: "work-log.read",
   },
 
+  // AI 운영
+  {
+    title: "이슈관리",
+    href: "/operations/issues",
+    caption: "AI 운영 · 이슈 접수/분석",
+    permission: "operations.read",
+  },
+  {
+    title: "직원배정",
+    href: "/operations/assignment",
+    caption: "AI 운영 · AI 자동 배정",
+    permission: "operations.read",
+  },
+  {
+    title: "인수인계",
+    href: "/operations/handover",
+    caption: "AI 운영 · 근무 인수인계",
+    permission: "operations.read",
+  },
+  {
+    title: "운영보드",
+    href: "/operations/board",
+    caption: "AI 운영 · 실시간 운영 피드",
+    permission: "operations.read",
+  },
+  {
+    title: "주간보고",
+    href: "/operations/report",
+    caption: "AI 운영 · AI 주간 운영 보고서",
+    permission: "operations.read",
+  },
+
   // 분석
   {
     title: "통계",
@@ -522,6 +567,8 @@ export const mockProfiles: Record<AppRole, ViewerProfile> = {
       "work-log.read",
       "work-log.write",
       "statistics.read",
+      "operations.read",
+      "operations.write",
       "admin.read",
       "admin.write",
       "workspace.read",
@@ -595,6 +642,8 @@ export const mockProfiles: Record<AppRole, ViewerProfile> = {
       "work-log.read",
       "work-log.write",
       "statistics.read",
+      "operations.read",
+      "operations.write",
       "workspace.read",
       "workspace.write",
       "navigation.search",
@@ -650,6 +699,7 @@ export const mockProfiles: Record<AppRole, ViewerProfile> = {
       "schedule.read",
       "work-log.read",
       "statistics.read",
+      "operations.read",
       "admin.read",
       "workspace.read",
       "navigation.search",

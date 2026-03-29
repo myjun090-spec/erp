@@ -23,6 +23,8 @@ export type PermissionCode =
   | "statistics.read"
   | "admin.read"
   | "admin.write"
+  | "operations.read"
+  | "operations.write"
   | "workspace.read"
   | "workspace.write"
   | "navigation.search"
@@ -151,7 +153,15 @@ export type ActionPermissionCode =
   | "admin.role.create"
   | "admin.role.update"
   | "admin.policy.create"
-  | "admin.policy.update";
+  | "admin.policy.update"
+  | "ops-issue.create"
+  | "ops-issue.update"
+  | "ops-issue.assign"
+  | "ops-staff.create"
+  | "ops-staff.update"
+  | "ops-handover.create"
+  | "ops-handover.update"
+  | "ops-report.generate";
 
 export type KnownPermissionCode = PermissionCode | ActionPermissionCode;
 
@@ -193,6 +203,8 @@ export const permissionCatalog: PermissionCode[] = [
   "statistics.read",
   "admin.read",
   "admin.write",
+  "operations.read",
+  "operations.write",
   "workspace.read",
   "workspace.write",
   "navigation.search",
@@ -225,6 +237,8 @@ export const permissionMetadataMap: Record<PermissionCode, PermissionMetadata> =
   "statistics.read": { label: "통계 조회", description: "이용자, 사례, 재무 통계를 조회합니다.", domain: "분석" },
   "admin.read": { label: "관리자 조회", description: "사용자, 조직, 역할, 정책을 조회합니다.", domain: "관리" },
   "admin.write": { label: "관리자 변경", description: "관리자 도메인 전체 변경 권한입니다.", domain: "관리" },
+  "operations.read": { label: "AI 운영 조회", description: "이슈, 인수인계, 운영 보드를 조회합니다.", domain: "AI 운영" },
+  "operations.write": { label: "AI 운영 변경", description: "이슈 등록, 인수인계 작성, 직원 배정 등을 수행합니다.", domain: "AI 운영" },
   "workspace.read": { label: "협업 조회", description: "공지, 자료실, 승인함을 조회합니다.", domain: "협업" },
   "workspace.write": { label: "협업 변경", description: "협업 도메인 전체 변경 권한입니다.", domain: "협업" },
   "navigation.search": { label: "전역 검색", description: "메뉴와 저장 뷰를 검색합니다.", domain: "공통" },
@@ -277,6 +291,10 @@ export const actionPermissionCatalog: ActionPermissionCode[] = [
   "admin.org.create", "admin.org.update",
   "admin.role.create", "admin.role.update",
   "admin.policy.create", "admin.policy.update",
+  "ops-issue.create", "ops-issue.update", "ops-issue.assign",
+  "ops-staff.create", "ops-staff.update",
+  "ops-handover.create", "ops-handover.update",
+  "ops-report.generate",
 ];
 
 function createActionMetadata(label: string, description: string, domain: string): PermissionMetadata {
@@ -406,6 +424,14 @@ export const actionPermissionMetadataMap: Record<ActionPermissionCode, Permissio
   "admin.role.update": createActionMetadata("역할 수정", "관리자에서 역할을 수정합니다.", "관리"),
   "admin.policy.create": createActionMetadata("정책 등록", "관리자에서 정책을 등록합니다.", "관리"),
   "admin.policy.update": createActionMetadata("정책 수정", "관리자에서 정책을 수정합니다.", "관리"),
+  "ops-issue.create": createActionMetadata("이슈 등록", "운영 이슈를 등록합니다.", "AI 운영"),
+  "ops-issue.update": createActionMetadata("이슈 수정", "운영 이슈를 수정합니다.", "AI 운영"),
+  "ops-issue.assign": createActionMetadata("이슈 배정", "운영 이슈를 직원에게 배정합니다.", "AI 운영"),
+  "ops-staff.create": createActionMetadata("운영직원 등록", "운영 직원을 등록합니다.", "AI 운영"),
+  "ops-staff.update": createActionMetadata("운영직원 수정", "운영 직원 정보를 수정합니다.", "AI 운영"),
+  "ops-handover.create": createActionMetadata("인수인계 등록", "인수인계를 등록합니다.", "AI 운영"),
+  "ops-handover.update": createActionMetadata("인수인계 수정", "인수인계를 수정합니다.", "AI 운영"),
+  "ops-report.generate": createActionMetadata("주간보고 생성", "AI 주간 운영보고를 생성합니다.", "AI 운영"),
 };
 
 export const allPermissionCatalog: KnownPermissionCode[] = [
@@ -471,6 +497,12 @@ const legacyPermissionImplications: Partial<Record<PermissionCode, ActionPermiss
     "admin.org.create", "admin.org.update",
     "admin.role.create", "admin.role.update",
     "admin.policy.create", "admin.policy.update",
+  ],
+  "operations.write": [
+    "ops-issue.create", "ops-issue.update", "ops-issue.assign",
+    "ops-staff.create", "ops-staff.update",
+    "ops-handover.create", "ops-handover.update",
+    "ops-report.generate",
   ],
 };
 
@@ -610,6 +642,17 @@ export const permissionSelectionGroups: PermissionSelectionGroup[] = [
       "admin.policy.create", "admin.policy.update",
     ],
   },
+  {
+    key: "operations",
+    title: "AI 운영 액션 권한",
+    description: "이슈 관리, 직원 배정, 인수인계, 주간보고 액션입니다.",
+    permissions: [
+      "ops-issue.create", "ops-issue.update", "ops-issue.assign",
+      "ops-staff.create", "ops-staff.update",
+      "ops-handover.create", "ops-handover.update",
+      "ops-report.generate",
+    ],
+  },
 ];
 
 const actionRoutePermissions: Array<{
@@ -667,6 +710,9 @@ const actionRoutePermissions: Array<{
   { pattern: /^\/schedule\/new$/, permission: "schedule.create" },
   { pattern: /^\/schedule\/[^/]+\/edit$/, permission: "schedule.update" },
   { pattern: /^\/work-log\/new$/, permission: "work-log.create" },
+  { pattern: /^\/operations\/issues\/new$/, permission: "ops-issue.create" },
+  { pattern: /^\/operations\/issues\/[^/]+\/edit$/, permission: "ops-issue.update" },
+  { pattern: /^\/operations\/handover\/new$/, permission: "ops-handover.create" },
 ];
 
 export function getActionPermissionForPath(
