@@ -54,12 +54,13 @@ export default function LawSearchPage() {
                 eyebrow="법률 자문"
                 title="복지 법령 검색"
                 description="사회복지 실천을 뒷받침하는 법적 근거와 현행 법령을 실시간으로 검색합니다."
-            >
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-medium border border-blue-100">
-                    <Scale size={14} />
-                    국가법령정보 MCP 연동 활성화됨
-                </div>
-            </PageHeader>
+                actions={
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-medium border border-blue-100">
+                        <Scale size={14} />
+                        국가법령정보 MCP 연동 활성화됨
+                    </div>
+                }
+            />
 
             {/* 검색 및 필터 패널 */}
             <Panel className="p-1 px-1 sm:p-2">
