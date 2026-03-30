@@ -213,6 +213,32 @@ export const navigationGroups: NavigationGroup[] = [
         phase: "Phase 3",
         permission: "workspace.read",
       },
+      {
+        title: "법령검색(법제처)",
+        href: "/law-search/external",
+        caption: "법제처 Open API 법령 검색",
+        phase: "Phase 3",
+        permission: "dashboard.read",
+      },
+      {
+        title: "우편번호",
+        href: "/zipcode",
+        caption: "도로명주소 우편번호 검색",
+        phase: "Phase 3",
+        permission: "dashboard.read",
+      },
+    ],
+  },
+  {
+    title: "업무도구",
+    items: [
+      {
+        title: "문서파싱",
+        href: "/document-parse",
+        caption: "HWP/PDF 문서 텍스트 추출",
+        phase: "Phase 3",
+        permission: "document.read",
+      },
     ],
   },
   {
@@ -256,6 +282,9 @@ export const routePermissions: Array<{
   { prefix: "/ai-assistant", permission: "dashboard.read" },
   { prefix: "/integration", permission: "admin.read" },
   { prefix: "/google-collab", permission: "workspace.read" },
+  { prefix: "/law-search/external", permission: "dashboard.read" },
+  { prefix: "/zipcode", permission: "dashboard.read" },
+  { prefix: "/document-parse", permission: "document.read" },
   { prefix: "/admin", permission: "admin.read" },
   { prefix: "/workspace", permission: "workspace.read" },
 ];
@@ -521,6 +550,26 @@ const searchableRouteItems: SearchableRouteItem[] = [
     href: "/statistics",
     caption: "분석 · 이용자/사례/재무 통계",
     permission: "statistics.read",
+  },
+
+  // 연계/도구
+  {
+    title: "법령검색(법제처)",
+    href: "/law-search/external",
+    caption: "연계 · 법제처 Open API 법령 검색",
+    permission: "dashboard.read",
+  },
+  {
+    title: "우편번호",
+    href: "/zipcode",
+    caption: "연계 · 도로명주소 우편번호 검색",
+    permission: "dashboard.read",
+  },
+  {
+    title: "문서파싱",
+    href: "/document-parse",
+    caption: "업무도구 · HWP/PDF 텍스트 추출",
+    permission: "document.read",
   },
 
   // 관리
