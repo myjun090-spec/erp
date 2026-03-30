@@ -44,24 +44,14 @@ export async function POST(req: NextRequest) {
     if (fileName.endsWith(".hwp") || fileName.endsWith(".hwpx")) {
       // kordoc로 HWP 파싱
       try {
-        const kordoc = await import("kordoc");
-        const parseHwp = kordoc.default?.parse ?? kordoc.parse;
+        const { parse: kordocParse } = await import("kordoc");
+        const result = await kordocParse(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
 
-        if (typeof parseHwp === "function") {
-          const result = await parseHwp(buffer);
-          text = typeof result === "string" ? result : (result?.text ?? result?.content ?? JSON.stringify(result));
-          metadata = typeof result === "object" && result !== null
-            ? { title: result.title ?? "", author: result.author ?? "" }
-            : {};
+        if (result.success) {
+          text = result.markdown;
+          metadata = {};
         } else {
-          // kordoc의 API가 다를 수 있으므로 fallback
-          const kordocModule = kordoc.default ?? kordoc;
-          if (typeof kordocModule === "function") {
-            const result = await kordocModule(buffer);
-            text = typeof result === "string" ? result : JSON.stringify(result);
-          } else {
-            throw new Error("kordoc 모듈의 파싱 함수를 찾을 수 없습니다.");
-          }
+          throw new Error(result.error);
         }
         parserUsed = "kordoc";
       } catch (kordocError) {
